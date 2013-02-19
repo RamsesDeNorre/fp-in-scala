@@ -1,0 +1,4 @@
+fp-in-scala
+===========
+
+Exercises
