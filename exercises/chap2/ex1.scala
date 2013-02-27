@@ -58,6 +58,15 @@ object MyModule {
     f => g1 => g2 =>
       lift[A,A,D,E] (lift (f) (g1) (g2)) (id)
 
+  def lift_ [A,B,C,D] (f: B => C => D) (g1: A => B) (g2: A => C) (a: A) : D =
+    f (g1(a)) (g2(a))
+
+  def lift3_ [A,B,C,D,E] (f:  B => C => D => E)
+                         (g1: A => B)
+                         (g2: A => C) :
+                         (A => D) => A => E =
+      lift_ (lift_ (f) (g1) (g2)) (id)
+
   def id [A] : A => A = a => a
 
   /*
