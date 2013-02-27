@@ -60,6 +60,16 @@ object MyModule {
 
   def id [A] : A => A = a => a
 
+  /*
+  *
+  * lift :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
+  * lift f g1 g2 a = f (g1 a) (g2 a)
+  * -- lift = liftA2
+  *
+  * :t ((.).(.).(.)) ((flip lift) id) lift
+  * ((.).(.).(.)) ((flip lift) id) lift
+  *   :: (b1 -> c1 -> c -> d) -> (b -> b1) -> (b -> c1) -> (b -> c) -> b -> d
+  */
 
   def fib : Int => Int = {
     n =>
