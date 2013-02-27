@@ -55,8 +55,10 @@ object MyModule {
                           (A => C) =>
                           (A => D) =>
                            A => E =
-    f => g1 => g2 => g3 => a =>
-      compose (lift (f) (g1) (g2) (a)) (g3) (a)
+    f => g1 => g2 =>
+      lift[A,A,D,E] (lift (f) (g1) (g2)) (id)
+
+  def id [A] : A => A = a => a
 
 
   def fib : Int => Int = {
