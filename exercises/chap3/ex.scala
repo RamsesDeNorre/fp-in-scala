@@ -158,7 +158,27 @@ object Chap3 {
 
     // Associates to the right and append is O(length first arg) => flatten is O(sum lengths)
     def flatten [A] : List[List[A]] => List[A] =
-      foldRight[List[A], List[A]] (_, Nil) (append (_) (_))
+      foldRight[List[A], List[A]] (_, Nil) (uncurry (append))
+
+    def plus1 : List[Int] => List[Int] =
+      foldRight[Int, List[Int]] (_,Nil) ((x,ys) => x+1 :: ys)
+
+    def doubles2Strings : List[Double] => List[String] =
+      foldRight[Double,List[String]] (_,Nil) ((x,ys) => x.toString :: ys)
+
+    def map [A,B] (f: A => B) : List[A] => List[B] =
+      foldRight[A,List[B]] (_,Nil) ((x,ys) => f(x) :: ys)
+
+    def filter [A] (p: A => Boolean) : List[A] => List[A] =
+      foldRight[A,List[A]] (_,Nil) ((x,ys) => if (p(x)) x::ys else ys)
+
+    def flatMap [A,B] (f: A => List[B]) : List[A] => List[B] =
+      flatten compose (map (f))
+
+    def filter_ [A] (p: A => Boolean) : List[A] => List[A] =
+      flatMap (x => if (p(x)) x::Nil else Nil)
+
+
 
   }
 }
