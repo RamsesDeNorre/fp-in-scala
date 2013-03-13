@@ -7,9 +7,9 @@ object MyModule {
   def greaterBy(x: Box, y: Box, f: Box => Double) =
     if (f(x) > f(y)) x else y
 
-  def taller : (Box, Box) => Box = greaterBy(_, _, _.height)
+  val taller : (Box, Box) => Box = greaterBy(_, _, _.height)
 
-  def wider  : (Box, Box) => Box = greaterBy(_, _, _.width)
+  val wider  : (Box, Box) => Box = greaterBy(_, _, _.width)
 
 
   def absolute(f: Int => Int) : Int => Int =
@@ -54,7 +54,7 @@ object MyModule {
                           (A => B) =>
                           (A => C) =>
                           (A => D) =>
-                           A => E =
+                           A => E  =
     f => g1 => g2 =>
       lift[A,A,D,E] (lift (f) (g1) (g2)) (id)
 
@@ -63,7 +63,7 @@ object MyModule {
 
   def lift3_ [A,B,C,D,E] (f:  B => C => D => E)
                          (g1: A => B)
-                         (g2: A => C) :
+                         (g2: A => C):
                          (A => D) => A => E =
       lift_ (lift_ (f) (g1) (g2)) (id)
 
