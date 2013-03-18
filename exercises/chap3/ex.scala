@@ -72,17 +72,8 @@ object Chap3 {
     }
 
     def dropWhile [A] (p: A => Boolean) : List[A] => List[A] = {
-      @tailrec
-      def dropWhile_ [A] (p: A => Boolean) (acc: List[A]) (xs: List[A]) : List[A] =
-        xs match {
-          case Nil    => acc
-          case x::xs_ => {
-            val acc_ = if (p (x)) acc else x::acc
-            dropWhile_ (p) (acc_) (xs_)
-          }
-        }
-
-      reverse compose (dropWhile_ (p) (Nil))
+      case x::xs if p(x) => dropWhile (p) (xs)
+      case l             => l
     }
 
     def setHead [A] (h: A) : List[A] => List[A] = {
