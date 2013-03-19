@@ -25,6 +25,8 @@ object Chap3 {
 
   object List {
 
+    def nil: List[Nothing] = Nil
+
     def sum(ints: List[Int]): Int = ints match {
       case Nil   => 0
       case x::xs => x + sum(xs)
@@ -219,8 +221,8 @@ object Chap3 {
   }
 
   sealed trait Tree[+A]
-  case class Leaf[A](value: A) extends Tree[A]
-  case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
+  case class Leaf[+A](value: A) extends Tree[A]
+  case class Branch[+A](left: Tree[A], right: Tree[A]) extends Tree[A]
 
   object Tree {
 
@@ -269,6 +271,35 @@ object Chap3 {
       fold_[A,Tree[B]] ((Leaf (_:B)) compose f) (Branch (_, _))
 
   }
+
+  import scala.language.higherKinds
+
+  trait Functor [F[_]] {
+    def map [A,B] : (A => B) => F[A] => F[B]
+  }
+
+  object Functor {
+    def map [F[_]: Functor, A, B] (g: A => B) (fa: F[A]) : F[B] =
+      implicitly[Functor[F]].map (g) (fa)
+  }
+
+  implicit object ListFunctor extends Functor[List] {
+    override def map [A,B] : (A => B) => List[A] => List[B] =
+      List.map (_)
+  }
+
+  implicit object TreeFunctor extends Functor[Tree] {
+    override def map [A,B] : (A => B) => Tree[A] => Tree[B] =
+      Tree.map (_)
+  }
+
+  import Functor.map
+  import List._
+
+  val succ  = (_:Int)+1
+  val test1 = map (succ) (1::2::3::nil: List[Int])
+  val test2 = map (succ) (nil: List[Int])
+  val test3 = map (succ) (Leaf(3): Tree[Int])
 
 }
 
