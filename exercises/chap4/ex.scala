@@ -1,6 +1,8 @@
 
 object Chap4 {
 
+  def id [A] : A => A = a => a
+
   sealed trait Option[+A] {
     
     def map [B] (f: A => B): Option[B] = this match {
@@ -79,7 +81,7 @@ object Chap4 {
       xs.foldRight (some(List():List[B])) ((a, b) => map2 (f(a),b) (_::_))
 
     def sequence_ [A] (xs: List[Option[A]]) : Option[List[A]] =
-      traverse (xs) (_ orElse None)
+      traverse (xs) (id)
 
   }
 
@@ -122,10 +124,7 @@ object Chap4 {
       xs.foldRight (right[E,List[B]](List())) ((a, b) => f(a).map2 (b) (_::_))
 
     def sequence_ [A,E] (xs: List[Either[E,A]]) : Either[E,List[A]] =
-      traverse (xs) {
-        case Left (e) => Left(e)
-        case r        => r
-      }
+      traverse (xs) (id)
   
   }
 
