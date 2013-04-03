@@ -51,7 +51,7 @@ object Chap3 {
 
     def tail [A] : List[A] => List[A] = {
       case Nil   => Nil
-      case x::xs => xs
+      case _::xs => xs
     }
 
     @tailrec
