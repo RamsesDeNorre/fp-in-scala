@@ -14,7 +14,7 @@ object Chap3 {
         case Branch (l,r) => size_ (l) (i => size_ (r) (j => k (1 + i + j)))
       }
 
-      size_ (t) (id)
+      size_ (t) (identity)
     }
 
     def fold [A,B] (t: Tree[A]) (f: A => B) (h: B => B => B) : B = {
@@ -26,10 +26,8 @@ object Chap3 {
                                  k (h (bl) (br))))
       }
 
-      fold_ (t) (id)
+      fold_ (t) (identity)
     }
-
-    def id [A] : A => A = a => a
 
   }
 
