@@ -128,32 +128,26 @@ object Chap5 {
     // ex 12
 
     def map [A,B] (f: A => B) : Stream[A] => Stream[B] =
-      unfold (_) { s => s.head match {
-        case Some(h) => Some ((f(h),s.tail))
-        case None    => None
-      }}
+      unfold (_) (s => s.head.map(h => (f(h), s.tail)))
 
     def take [A] (n: Int) : Stream[A] => Stream[A] = s =>
       unfold ((n, s)) { case (n, s) =>
-        (n, s.head) match {
-          case (n, Some(h)) if n > 0 => Some ((h, (n-1, s.tail)))
-          case _                     => None
-        }
+        for { h <- s.head
+              if n > 0
+            } yield (h, (n-1, s.tail))
       }
         
       def takeWhile [A] (p: A => Boolean) : Stream[A] => Stream[A] =
-      unfold (_) { s => s.head match {
-          case Some(h) if p(h) => Some ((h, s.tail))
-          case _               => None
-        }
-      }
+        unfold (_) ( s => for { h <- s.head
+                                if p(h)
+                              } yield (h, s.tail)
+        )
 
       def zipWith [A,B,C] (f: A => B => C) : Stream[A] => Stream[B] => Stream[C] =
         s => t => unfold ((s, t)) { case (s, t) =>
-          (s.head, t.head) match {
-            case (Some(sh),Some(th)) => Some ((f (sh) (th), (s.tail, t.tail)))
-            case _                   => None
-          }
+          for { sh <- s.head
+                th <- t.head
+              } yield (f(sh)(th), (s.tail, t.tail))
         }
 
       def zip [A,B] : Stream[A] => Stream[B] => Stream[(A,B)] =
