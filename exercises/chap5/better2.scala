@@ -184,7 +184,7 @@ object Chap5 {
 
       def scanr [A,B] (f: (A, B) => B) (z: B) : Stream[A] => Stream[B] =
         _.foldr (Stream(z)) ((a, bs) =>
-          bs.head.fold [Stream[B]] (empty) (b => cons(f(a, b), bs))
+          bs.head.fold (empty[B]) (b => cons(f(a, b), bs))
         )
 
   }
