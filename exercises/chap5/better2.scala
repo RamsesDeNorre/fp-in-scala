@@ -177,12 +177,14 @@ object Chap5 {
       def tails [A] : Stream[A] => Stream[Stream[A]] =
         unfold (_) { s =>
           if (s.isEmpty) None
-          else           Some ((s,s.tail))
+          else           Some ((s, s.tail))
         } append Stream(empty)
+
+      // ex 15
 
       def scanr [A,B] (f: (A, B) => B) (z: B) : Stream[A] => Stream[B] =
         _.foldr (Stream(z)) ((a, bs) =>
-          bs.head.fold [Stream[B]] (empty) (b => cons(f(a,b),bs))
+          bs.head.fold [Stream[B]] (empty) (b => cons(f(a, b), bs))
         )
 
   }
