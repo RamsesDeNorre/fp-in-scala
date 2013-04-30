@@ -169,8 +169,7 @@ object Chap5 {
 
       def startsWith [A] : Stream[A] => Stream[A] => Boolean =
         s => t => zipAll (s) (t) .takeWhile (_._2.isDefined) forall {
-          case (Some(a), Some(b)) => a == b
-          case _                  => false
+          sequenceP(_).fold (false) { case (a,b) => a == b }
         }
 
       // ex 14
@@ -191,6 +190,12 @@ object Chap5 {
   }
 
   def pair [A,B] : A => B => (A,B) = a => b => (a,b)
+
+  def sequenceP [A,B] : ((Option[A], Option[B])) => Option[(A,B)] = {
+    case (oa, ob) => for { a <- oa
+                           b <- ob
+                         } yield (a,b)
+  }
 
   val ones: Stream[Int] = cons(1, ones)
   val lin : Stream[Int] = cons(1, lin map (_+1))
