@@ -95,10 +95,6 @@ object Chap5 {
 
     // ex 10
 
-    implicit class OptionWithFold [T] (o: Option[T]) {
-      def fold [R] (r: => R) (f: T => R) = (o map f) getOrElse r
-    }
-
     def unfold [A,S] (z: S) (f: S => Option[(A,S)]): Stream[A] = {
       def unfold_ (s: S): Stream[A] =
         f(s).fold (empty[A]) {case (a,s_) => cons(a, unfold_(s_))} 
@@ -195,6 +191,10 @@ object Chap5 {
     case (oa, ob) => for { a <- oa
                            b <- ob
                          } yield (a,b)
+  }
+
+  implicit class OptionWithFold [T] (o: Option[T]) {
+    def fold [R] (r: => R) (f: T => R) = (o map f) getOrElse r
   }
 
   val ones: Stream[Int] = cons(1, ones)
