@@ -15,10 +15,10 @@ object Chap5 {
       foldr (true) ((_,_) => false)
 
     def head : Option[A] =
-      fold [Option[A]] (None) ((a,b) => Some(a))
+      fold [Option[A]] (None) ((a,_) => Some(a))
 
     def tail : Stream[A] =
-      fold (empty[A]) ((a,b) => b)
+      fold (empty[A]) ((_,b) => b)
 
 
     // ex 1
