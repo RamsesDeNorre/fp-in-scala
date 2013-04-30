@@ -18,7 +18,7 @@ object Chap5 {
       fold [Option[A]] (None) ((a,b) => Some(a))
 
     def tail : Stream[A] =
-    fold [Stream[A]] (empty) ((a,b) => b)
+      fold (empty[A]) ((a,b) => b)
 
 
     // ex 1
@@ -28,15 +28,16 @@ object Chap5 {
 
     // ex 2
 
-    def take : Int => Stream[A] = {
-      case n if n <= 0 => empty
-      case n           => fold [Stream[A]] (empty) ((h,t) => cons(h, t take (n-1)))
-    }
+    def take : Int => Stream[A] = n =>
+      fold (empty[A]) ((h,t) =>
+        if (n > 0) cons(h, t take (n-1))
+        else       empty
+    )
 
     // ex 3
 
     def takeWhile (p: A => Boolean): Stream[A] =
-      foldr [Stream[A]] (empty) ((h,t) => if (p(h)) cons(h, t) else empty)
+      foldr (empty[A]) ((h,t) => if (p(h)) cons(h, t) else empty)
 
     // ex 4
 
@@ -46,16 +47,16 @@ object Chap5 {
     // ex 6
 
     def map [B] (f: A => B): Stream[B] =
-      foldr [Stream[B]] (empty) ((h,t) => cons(f(h), t))
+      foldr (empty[B]) ((h,t) => cons(f(h), t))
 
     def filter (p: A => Boolean): Stream[A] =
-      foldr [Stream[A]] (empty) ((h,t) => if (p(h)) cons(h,t) else t)
+      foldr (empty[A]) ((h,t) => if (p(h)) cons(h,t) else t)
 
     def append [B >: A] (s: => Stream[B]): Stream[B] =
       foldr (s) (cons(_,_))
 
     def flatMap [B >: A] (f: A => Stream[B]): Stream[B] =
-      foldr [Stream[B]] (empty) ((h,t) => f(h) append t)
+      foldr (empty[B]) ((h,t) => f(h) append t)
 
   }
 
@@ -72,7 +73,7 @@ object Chap5 {
     }
 
     def apply [A] (as: A*): Stream[A] =
-      as.foldRight [Stream[A]] (empty) (cons(_,_))
+      as.foldRight (empty[A]) (cons(_,_))
 
     // ex 7
 
@@ -100,7 +101,7 @@ object Chap5 {
 
     def unfold [A,S] (z: S) (f: S => Option[(A,S)]): Stream[A] = {
       def unfold_ (s: S): Stream[A] =
-        f(s).fold [Stream[A]] (empty) {case (a,s_) => cons(a, unfold_(s_))} 
+        f(s).fold (empty[A]) {case (a,s_) => cons(a, unfold_(s_))} 
       
       unfold_ (z)
     }
