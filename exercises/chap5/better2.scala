@@ -125,54 +125,54 @@ object Chap5 {
             } yield (h, (n-1, s.tail))
       }
         
-      def takeWhile [A] (p: A => Boolean) : Stream[A] => Stream[A] =
-        unfold (_) ( s => for { h <- s.head
-                                if p(h)
-                              } yield (h, s.tail)
-        )
+    def takeWhile [A] (p: A => Boolean) : Stream[A] => Stream[A] =
+      unfold (_) ( s => for { h <- s.head
+                              if p(h)
+                            } yield (h, s.tail)
+      )
 
-      def zipWith [A,B,C] (f: A => B => C) : Stream[A] => Stream[B] => Stream[C] =
-        s => t => unfold ((s, t)) { case (s, t) =>
-          for { sh <- s.head
-                th <- t.head
-              } yield (f(sh)(th), (s.tail, t.tail))
+    def zipWith [A,B,C] (f: A => B => C) : Stream[A] => Stream[B] => Stream[C] =
+      s => t => unfold ((s, t)) { case (s, t) =>
+        for { sh <- s.head
+              th <- t.head
+            } yield (f(sh)(th), (s.tail, t.tail))
+      }
+
+    def zip [A,B] : Stream[A] => Stream[B] => Stream[(A,B)] =
+      zipWith (pair)
+
+    def zipAllWith [A,B,C] (f: Option[A] => Option[B] => C) : Stream[A] => Stream[B] => Stream[C] =
+      s => t => unfold ((s, t)) { case (s, t) =>
+        (s.head, t.head) match {
+          case (None, None) => None
+          case (hs, ht)     => Some ((f (hs) (ht), (s.tail, t.tail)))
         }
+      }
 
-      def zip [A,B] : Stream[A] => Stream[B] => Stream[(A,B)] =
-        zipWith (pair)
-
-      def zipAllWith [A,B,C] (f: Option[A] => Option[B] => C) : Stream[A] => Stream[B] => Stream[C] =
-        s => t => unfold ((s, t)) { case (s, t) =>
-          (s.head, t.head) match {
-            case (None, None) => None
-            case (hs, ht)     => Some ((f (hs) (ht), (s.tail, t.tail)))
-          }
-        }
-
-      def zipAll [A,B] : Stream[A] => Stream[B] => Stream[(Option[A],Option[B])] =
-        zipAllWith (pair)
+    def zipAll [A,B] : Stream[A] => Stream[B] => Stream[(Option[A],Option[B])] =
+      zipAllWith (pair)
       
-      // ex 13
+    // ex 13
 
-      def startsWith [A] : Stream[A] => Stream[A] => Boolean =
-        s => t => zipAll (s) (t) .takeWhile (_._2.isDefined) forall {
-          sequence(_).fold (false) { case (a,b) => a == b }
-        }
+    def startsWith [A] : Stream[A] => Stream[A] => Boolean =
+      s => t => zipAll (s) (t) .takeWhile (_._2.isDefined) forall {
+        sequence(_).fold (false) { case (a,b) => a == b }
+      }
 
-      // ex 14
+    // ex 14
 
-      def tails [A] : Stream[A] => Stream[Stream[A]] =
-        unfold (_) { s =>
-          if (s.isEmpty) None
-          else           Some ((s, s.tail))
-        } append Stream(empty)
+    def tails [A] : Stream[A] => Stream[Stream[A]] =
+      unfold (_) { s =>
+        if (s.isEmpty) None
+        else           Some ((s, s.tail))
+      } append Stream(empty)
 
-      // ex 15
+    // ex 15
 
-      def scanr [A,B] (f: (A, B) => B) (z: B) : Stream[A] => Stream[B] =
-        _.foldr (Stream(z)) ((a, bs) =>
-          bs.head.fold (empty[B]) (b => cons(f(a, b), bs))
-        )
+    def scanr [A,B] (f: (A, B) => B) (z: B) : Stream[A] => Stream[B] =
+      _.foldr (Stream(z)) ((a, bs) =>
+        bs.head.fold (empty[B]) (b => cons(f(a, b), bs))
+      )
 
   }
 
