@@ -86,11 +86,9 @@ object Chap5 {
     // ex 9
 
     def fibs : Stream[Int] = {
-      def fibs_ (n1: Int, n2: Int): Stream[Int] = {
-        val s = n1 + n2
-        cons(s, fibs_(s, n1))
-      }
-      cons(0, cons(1, fibs_(1,0)))
+      def fibs_ (n1: Int, n2: Int): Stream[Int] =
+        cons(n2, fibs_(n1+n2, n1))
+      fibs_(1,0)
     }
 
     // ex 10
@@ -104,15 +102,8 @@ object Chap5 {
 
     // ex 11
 
-    def fibs_u : Stream[Int] = {
-      val tail = unfold ((1,0)) {
-        case (n1: Int, n2: Int) =>
-          val s = n1 + n2
-          Some((s, (s, n1)))
-      }
-
-      cons(0, cons(1, tail))
-    }
+    def fibs_u : Stream[Int] =
+      unfold ((1,0)) { case (n1: Int, n2: Int) => Some((n2, (n1+n2, n1))) }
 
     def from_u (n: Int) : Stream[Int] =
       unfold (n) (n => Some (n,n+1))
