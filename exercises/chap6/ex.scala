@@ -7,7 +7,7 @@ object Chap6 {
 
     trait RNG {
      def nextInt: (Int, RNG)
-   }
+    }
 
     object RNG {
       def simple(seed: Long): RNG = new RNG {
@@ -31,13 +31,13 @@ object Chap6 {
 
     // ex 3
 
-   def intDouble (r0: RNG): ((Int,Double), RNG) = {
+    def intDouble (r0: RNG): ((Int,Double), RNG) = {
       val (i, r1) = r0.nextInt
       val (d, r2) = double (r1)
       ((i, d), r2)
-   }
+    }
 
-   def doubleInt(r: RNG): ((Double,Int), RNG) =
+    def doubleInt(r: RNG): ((Double,Int), RNG) =
       intDouble (r) lmap (_.swap)
 
     def double3(r0: RNG): ((Double,Double,Double), RNG) = {
@@ -62,15 +62,15 @@ object Chap6 {
 
     val int : Rand[Int] = _.nextInt
 
-   def map [A,B] (r: Rand[A]) (f: A => B) : Rand[B] =
+    def map [A,B] (r: Rand[A]) (f: A => B) : Rand[B] =
       rng => r (rng) lmap (f)
 
-   // ex 5
+    // ex 5
 
-   def positiveMax (n: Int) : Rand[Int] =
+    def positiveMax (n: Int) : Rand[Int] =
       map (positiveInt) (_ / (Int.MaxValue / n))
 
-   // ex 6
+    // ex 6
 
     val doubleA : Rand[Double] =
       map (positiveInt) (_.toDouble / (Int.MaxValue.toDouble + 1))
