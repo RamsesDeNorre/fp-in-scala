@@ -179,8 +179,8 @@ object Chap6 {
 
       case class Machine (locked: Boolean, candies: Int, coins: Int)
 
-      def empty (m: Machine) : Boolean =
-        m.candies <= 0
+      def empty : Machine => Boolean =
+        _.candies <= 0
 
       val insert : State [Machine,Unit] = modify ( m =>
         Machine (false, m.candies, m.coins + 1)
