@@ -156,12 +156,14 @@ object Chap6 {
     def set [S] (s: S) : State [S,Unit] =
       State (_ => ((),s))
      
-    def modify [S] (f: S => S) : State [S, Unit] = for {
-      s <- get
-      _ <- set (f (s))
+    def modify [S] (f: S => S) : State [S,Unit] = for {
+      s <- gets (f)
+      _ <- set  (s)
     } yield ()
 
-    def when [S] (c: Boolean) (t: State [S, Unit]) : State [S,Unit] =
+    def gets [S,T] : (S => T) => State [S,T] = get map _
+
+    def when [S] (c: Boolean) (t: State [S,Unit]) : State [S,Unit] =
       State { s =>
         if (c) t run (s)
         else ((),s)
@@ -180,19 +182,16 @@ object Chap6 {
       def empty (m: Machine) : Boolean =
         m.candies <= 0
 
-      val insert : State [Machine,Unit] = for {
-        m <- get
-        _ <- set (Machine (false, m.candies, m.coins + 1))
-      } yield ()
+      val insert : State [Machine,Unit] = modify ( m =>
+        Machine (false, m.candies, m.coins + 1)
+      )
 
-      val turn : State [Machine,Unit] = for {
-        m <- get
-        _ <- when (! m.locked) {
-               set (Machine (true, m.candies - 1, m.coins))
-             }
-      } yield ()
+      val turn : State [Machine,Unit] = modify ( m =>
+        if (! m.locked) Machine (true, m.candies - 1, m.coins)
+        else m
+      )
 
-      val coins : State [Machine,Int] = get map (_.coins)
+      val coins : State [Machine,Int] = gets (_.coins)
 
       def step (in: Input) : State [Machine,Unit] = for {
         m <- get
@@ -202,7 +201,7 @@ object Chap6 {
              })
         } yield ()
 
-      def simulateMachine (in: List[Input]): State [Machine, Int] = for {
+      def simulateMachine (in: List[Input]): State [Machine,Int] = for {
         _ <- sequence (in map (step))
         c <- coins
       } yield c
